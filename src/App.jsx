@@ -3,6 +3,9 @@ import './App.css'
 
 function App() {
   const [cards, setCards] = useState([]); // empty array to save card images
+  const [score, setScore] = useState(0);
+  const [bestScore, setBestScore] = useState(0);
+  const [clickedCards, setClickedCards] = usestate([]);
 
   useEffect(() => {
     async function fetchPokemon() { // creating async function
@@ -18,7 +21,7 @@ function App() {
         );  
       }
 
-      // storing all the api info in "results"
+      // waiting for the loop to finish and storing the results
       const results = await Promise.all(promises);
 
       // iterate through results to store id, name, and image for each pokemon
