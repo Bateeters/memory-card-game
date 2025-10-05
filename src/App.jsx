@@ -5,7 +5,7 @@ function App() {
   const [cards, setCards] = useState([]); // empty array to save card images
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const [clickedCards, setClickedCards] = usestate([]);
+  const [clickedCards, setClickedCards] = useState([]);
 
   useEffect(() => {
     async function fetchPokemon() { // creating async function
@@ -37,12 +37,37 @@ function App() {
     fetchPokemon(); // calling function to populate 12 random pokemon
   }, []);
 
+  function handleCardClick(id) {
+    // check to see if card has already been clicked
+    if (clickedCards.includes(id)) {
+      // reset score and game
+      setScore(0);
+      setClickedCards([]);
+    } else {
+      // update score
+      const newScore = score + 1;
+      setScore(newScore);
+
+      // add to array of clicked cards
+      setClickedCards([...clickedCards, id]);
+
+      // Check to see if it's a new best score
+      if (newScore > bestScore) {
+        setBestScore(newScore);
+      }
+    }
+  }
+
   return (
-    <div>
+    <div className='game-container'>
       <h1>Memory Card Game</h1>
+      <div className='scoreboard'>
+        <p>Score: {score}</p>
+        <p>Best Score: {bestScore}</p>
+      </div>
       <div className='card-grid'>
         {cards.map((card) => (
-          <div key={card.id} className='card' style={{border: "1px solid white"}}>
+          <div key={card.id} className='card' onClick={() => handleCardClick(card.id)}>
             <img src={card.image} alt={card.name} />
             <h3>{card.name}</h3>
           </div>
