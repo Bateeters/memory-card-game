@@ -6,37 +6,44 @@ function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [clickedCards, setClickedCards] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {
-    async function fetchPokemon() { // creating async function
-      const promises = []; // storage for each api return
+  // API call to get 12 pokemon
+  async function fetchPokemon() { // creating async function
+    const promises = []; // storage for each api return
 
-      // loop to generate 12 calls
-      for (let i = 1; i <= 12; i++){
-        const randNum = Math.floor(Math.random() * (151 - 1 + 1)) + 1; // generates a random number for each loop
-        promises.push(
-          fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`).then((res) => // uses random number to populate pokemon info
-            res.json()
-          )
-        );  
-      }
-
-      // waiting for the loop to finish and storing the results
-      const results = await Promise.all(promises);
-
-      // iterate through results to store id, name, and image for each pokemon
-      const newCards = results.map((pokemon) => ({
-        id: pokemon.id,
-        name: pokemon.name,
-        image: pokemon.sprites.front_default,
-      }));
-
-      setCards(newCards); // adding each card to the "cards" useState
+    // loop to generate 12 calls
+    for (let i = 1; i <= 12; i++){
+      const randNum = Math.floor(Math.random() * (151 - 1 + 1)) + 1; // generates a random number for each loop
+      promises.push(
+        fetch(`https://pokeapi.co/api/v2/pokemon/${randNum}`).then((res) => // uses random number to populate pokemon info
+          res.json()
+        )
+      );  
     }
 
-    fetchPokemon(); // calling function to populate 12 random pokemon
-  }, []);
+    // reset card array
+    setCards([]);
 
+    // waiting for the loop to finish and storing the results
+    const results = await Promise.all(promises);
+
+    // iterate through results to store id, name, and image for each pokemon
+    const newCards = results.map((pokemon) => ({
+      id: pokemon.id,
+      name: pokemon.name,
+      image: pokemon.sprites.front_default,
+    }));
+
+    setCards(newCards); // adding each card to the "cards" useState
+  }
+
+  useEffect(() => {
+    fetchPokemon(); // calling function to populate 12 random pokemon
+  }, [refresh]);
+
+
+  // onClick Scoring handler function
   function handleCardClick(id) {
     // check to see if card has already been clicked
     if (clickedCards.includes(id)) {
@@ -56,6 +63,8 @@ function App() {
         setBestScore(newScore);
       }
     }
+
+    setRefresh(prev => !prev);
   }
 
   return (
